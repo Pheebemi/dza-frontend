@@ -36,7 +36,7 @@ export default function AlphabetPage() {
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Navbar />
       <Container maxWidth="md" sx={{ flex: 1, py: 4, px: 2 }}>
-        <Typography variant="h5" color="primary" fontWeight={700} mb={3}>
+        <Typography variant="h5" color="primary" sx={{ fontWeight: 700, mb: 3 }}>
           Jenjo Alphabet
         </Typography>
 
@@ -67,7 +67,7 @@ export default function AlphabetPage() {
                   '&:hover': { boxShadow: 4 },
                 }}
               >
-                <Typography variant="h5" color="primary" fontWeight={700}>
+                <Typography variant="h5" color="primary" sx={{ fontWeight: 700 }}>
                   {letter}
                 </Typography>
                 <Typography variant="caption" color="text.secondary" noWrap>
@@ -81,18 +81,18 @@ export default function AlphabetPage() {
 
       <Dialog open={!!selected} onClose={() => setSelected(null)} maxWidth="xs" fullWidth>
         <DialogTitle sx={{ textAlign: 'center', pb: 0 }}>
-          <Typography variant="h2" component="div" color="primary" fontWeight={700}>
+          <Typography variant="h2" component="div" color="primary" sx={{ fontWeight: 700 }}>
             {selected?.letter || selected?.character}
           </Typography>
         </DialogTitle>
         <DialogContent sx={{ textAlign: 'center' }}>
           {(selected?.example || selected?.example_word) && (
-            <Typography variant="h6" mt={1}>
+            <Typography variant="h6" sx={{ mt: 1 }}>
               {selected?.example || selected?.example_word}
             </Typography>
           )}
           {(selected?.meaning || selected?.english) && (
-            <Typography variant="body2" color="text.secondary" mt={1}>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
               {selected?.meaning || selected?.english}
             </Typography>
           )}

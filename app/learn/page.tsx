@@ -21,10 +21,10 @@ export default function LearnPage() {
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Navbar />
       <Container maxWidth="sm" sx={{ flex: 1, py: 4, px: 2 }}>
-        <Typography variant="h5" color="primary" fontWeight={700} mb={0.5}>
+        <Typography variant="h5" color="primary" sx={{ fontWeight: 700, mb: 0.5 }}>
           Learn Jenjo
         </Typography>
-        <Typography variant="body2" color="text.secondary" mb={3}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
           Pick a topic to start learning
         </Typography>
         <div className="grid grid-cols-2 gap-4">
@@ -32,10 +32,10 @@ export default function LearnPage() {
             <Card key={s.href} elevation={1}>
               <CardActionArea component={Link} href={s.href} sx={{ height: '100%' }}>
                 <CardContent>
-                  <Typography variant="h4" component="span" display="block" mb={1}>
+                  <Typography variant="h4" component="span" sx={{ display: 'block', mb: 1 }}>
                     {s.icon}
                   </Typography>
-                  <Typography variant="subtitle1" color="primary" fontWeight={700}>
+                  <Typography variant="subtitle1" color="primary" sx={{ fontWeight: 700 }}>
                     {s.title}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">

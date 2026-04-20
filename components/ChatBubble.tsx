@@ -52,7 +52,7 @@ export default function ChatBubble({ role, content }: ChatBubbleProps) {
         }}
       >
         {content.split('\n').map((line, i) => (
-          <Typography key={i} variant="body2" sx={{ lineHeight: 1.65, mt: i > 0 ? 0.5 : 0 }}>
+          <Typography key={i} variant="body2" sx={{ lineHeight: 1.65, mt: i > 0 ? 0.5 : 0, mb: 0 }}>
             {line}
           </Typography>
         ))}

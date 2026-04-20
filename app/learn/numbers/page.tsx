@@ -43,10 +43,10 @@ export default function NumbersPage() {
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Navbar />
       <Container maxWidth="md" sx={{ flex: 1, py: 4, px: 2 }}>
-        <Typography variant="h5" color="primary" fontWeight={700} mb={0.5}>
+        <Typography variant="h5" color="primary" sx={{ fontWeight: 700, mb: 0.5 }}>
           Numbers
         </Typography>
-        <Typography variant="body2" color="text.secondary" mb={3}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
           Note: 6 = &quot;sibling of 1&quot;, 7 = &quot;sibling of 2&quot;, etc.
         </Typography>
 
@@ -78,7 +78,7 @@ export default function NumbersPage() {
                   >
                     {num}
                   </Avatar>
-                  <Typography variant="subtitle1" color="primary" fontWeight={700}>
+                  <Typography variant="subtitle1" color="primary" sx={{ fontWeight: 700 }}>
                     {word}
                   </Typography>
                   {note && (

@@ -44,7 +44,7 @@ export default function PhrasesPage() {
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Navbar />
       <Container maxWidth="sm" sx={{ flex: 1, py: 4, px: 2 }}>
-        <Typography variant="h5" color="primary" fontWeight={700} mb={3}>
+        <Typography variant="h5" color="primary" sx={{ fontWeight: 700, mb: 3 }}>
           Common Phrases
         </Typography>
 
@@ -55,7 +55,7 @@ export default function PhrasesPage() {
         )}
 
         {Object.entries(grouped).map(([cat, items]) => (
-          <Box key={cat} mb={4}>
+          <Box key={cat} sx={{ mb: 4 }}>
             <Chip
               label={cat.toUpperCase()}
               color="primary"

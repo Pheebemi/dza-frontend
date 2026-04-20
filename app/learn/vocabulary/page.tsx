@@ -50,7 +50,7 @@ export default function VocabularyPage() {
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Navbar />
       <Container maxWidth="md" sx={{ flex: 1, py: 4, px: 2 }}>
-        <Typography variant="h5" color="primary" fontWeight={700} mb={2}>
+        <Typography variant="h5" color="primary" sx={{ fontWeight: 700, mb: 2 }}>
           Vocabulary
         </Typography>
 
@@ -95,10 +95,10 @@ export default function VocabularyPage() {
           {filtered.map((entry, i) => (
             <Card key={i} variant="outlined">
               <CardContent sx={{ pb: '12px !important' }}>
-                <Typography variant="subtitle1" color="primary" fontWeight={700}>
+                <Typography variant="subtitle1" color="primary" sx={{ fontWeight: 700 }}>
                   {entry.jenjo || entry.dza || entry.word}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" mt={0.5}>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                   {entry.english || entry.meaning}
                 </Typography>
               </CardContent>
