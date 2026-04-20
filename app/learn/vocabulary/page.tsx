@@ -76,12 +76,14 @@ export default function VocabularyPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: 3 } }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon fontSize="small" color="action" />
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" color="action" />
+                </InputAdornment>
+              ),
+            },
           }}
         />
 
