@@ -5,16 +5,47 @@ export interface Message {
   content: string;
 }
 
-export async function sendMessage(message: string, history: Message[]) {
+export async function sendMessage(message: string, conversationId: string | null) {
   const response = await fetch(`${API_BASE}/api/chat/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, history }),
+    body: JSON.stringify({ message, conversation_id: conversationId }),
   });
   if (!response.ok) {
     throw new Error(`API error: ${response.status}`);
   }
-  return response.json() as Promise<{ reply: string }>;
+  return response.json() as Promise<{ reply: string; conversation_id: string }>;
+}
+
+export async function getConversation(conversationId: string) {
+  const res = await fetch(`${API_BASE}/api/conversations/${conversationId}/`);
+  if (!res.ok) {
+    throw new Error(`API error: ${res.status}`);
+  }
+  return res.json() as Promise<{ conversation_id: string | null; messages: Message[] }>;
+}
+
+export interface ConversationSummary {
+  id: string;
+  title: string;
+  updated_at: string;
+}
+
+export async function listConversations() {
+  const res = await fetch(`${API_BASE}/api/conversations/`);
+  if (!res.ok) {
+    throw new Error(`API error: ${res.status}`);
+  }
+  return res.json() as Promise<ConversationSummary[]>;
+}
+
+export async function deleteConversation(conversationId: string) {
+  const res = await fetch(`${API_BASE}/api/conversations/${conversationId}/`, {
+    method: 'DELETE',
+  });
+  if (!res.ok && res.status !== 204) {
+    throw new Error(`API error: ${res.status}`);
+  }
 }
 
 export async function getAlphabet() {

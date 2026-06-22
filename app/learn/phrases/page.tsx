@@ -1,17 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Chip from '@mui/material/Chip';
-import Paper from '@mui/material/Paper';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import Divider from '@mui/material/Divider';
-import CircularProgress from '@mui/material/CircularProgress';
 import Navbar from '@/components/Navbar';
+import Loader from '@/components/Loader';
 import { getPhrases } from '@/lib/api';
 
 interface Phrase {
@@ -26,11 +17,13 @@ interface Phrase {
 
 export default function PhrasesPage() {
   const [phrases, setPhrases] = useState<Phrase[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     getPhrases()
       .then((res) => setPhrases(Array.isArray(res) ? res : []))
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setLoaded(true));
   }, []);
 
   const grouped = phrases.reduce<Record<string, Phrase[]>>((acc, p) => {
@@ -41,49 +34,38 @@ export default function PhrasesPage() {
   }, {});
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div className="flex min-h-screen flex-col">
       <Navbar />
-      <Container maxWidth="sm" sx={{ flex: 1, py: 4, px: 2 }}>
-        <Typography variant="h5" color="primary" sx={{ fontWeight: 700, mb: 3 }}>
-          Common Phrases
-        </Typography>
+      <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-10">
+        <h1 className="font-display text-4xl font-bold text-green">Common Phrases</h1>
+        <p className="mt-2 text-muted">Everyday expressions, grouped by use</p>
 
-        {phrases.length === 0 && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
-            <CircularProgress color="primary" />
-          </Box>
+        {!loaded ? (
+          <Loader />
+        ) : (
+          <div className="mt-8 space-y-8">
+            {Object.entries(grouped).map(([cat, items]) => (
+              <section key={cat}>
+                <h2 className="mb-3 inline-block rounded-full bg-green-soft px-3 py-1 text-xs font-bold uppercase tracking-wider text-green">
+                  {cat}
+                </h2>
+                <div className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-paper">
+                  {items.map((p, i) => (
+                    <div key={i} className="px-5 py-4">
+                      <p className="font-display text-lg font-bold text-green">
+                        {p.jenjo || p.dza || p.phrase}
+                      </p>
+                      <p className="mt-0.5 text-sm text-muted">
+                        {p.english || p.translation}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
         )}
-
-        {Object.entries(grouped).map(([cat, items]) => (
-          <Box key={cat} sx={{ mb: 4 }}>
-            <Chip
-              label={cat.toUpperCase()}
-              color="primary"
-              size="small"
-              sx={{ mb: 1.5, letterSpacing: '0.07em', fontWeight: 600 }}
-            />
-            <Paper variant="outlined" sx={{ borderRadius: 3, overflow: 'hidden' }}>
-              <List disablePadding>
-                {items.map((p, i) => (
-                  <Box key={i}>
-                    <ListItem sx={{ py: 1.5, px: 2 }}>
-                      <ListItemText
-                        primary={p.jenjo || p.dza || p.phrase}
-                        secondary={p.english || p.translation}
-                        slotProps={{
-                          primary: { style: { color: '#1B5E20', fontWeight: 700 } },
-                          secondary: { style: { fontSize: '0.875rem' } },
-                        }}
-                      />
-                    </ListItem>
-                    {i < items.length - 1 && <Divider component="li" />}
-                  </Box>
-                ))}
-              </List>
-            </Paper>
-          </Box>
-        ))}
-      </Container>
-    </Box>
+      </main>
+    </div>
   );
 }

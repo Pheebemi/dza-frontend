@@ -1,52 +1,65 @@
-'use client';
-
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
-import CardContent from '@mui/material/CardContent';
-import Navbar from '@/components/Navbar';
 import Link from 'next/link';
+import Navbar from '@/components/Navbar';
 
 const sections = [
-  { href: '/learn/alphabet', title: 'Alphabet', desc: '38 letters of the Jenjo script', icon: '🔤' },
-  { href: '/learn/vocabulary', title: 'Vocabulary', desc: 'Words by category: body, animals, food & more', icon: '📖' },
-  { href: '/learn/phrases', title: 'Phrases', desc: 'Common expressions and greetings', icon: '💬' },
-  { href: '/learn/numbers', title: 'Numbers', desc: 'Count 1–20 in Jenjo', icon: '🔢' },
+  {
+    href: '/learn/alphabet',
+    title: 'Alphabet',
+    desc: 'The letters of the Jenjo script',
+    icon: '🔤',
+    accent: 'bg-clay-soft',
+  },
+  {
+    href: '/learn/vocabulary',
+    title: 'Vocabulary',
+    desc: 'Words by category: body, animals, food & more',
+    icon: '📖',
+    accent: 'bg-green-soft',
+  },
+  {
+    href: '/learn/phrases',
+    title: 'Phrases',
+    desc: 'Common expressions and greetings',
+    icon: '💬',
+    accent: 'bg-ochre-soft',
+  },
+  {
+    href: '/learn/numbers',
+    title: 'Numbers',
+    desc: 'Count 1–20 in Jenjo',
+    icon: '🔢',
+    accent: 'bg-sand',
+  },
 ];
 
 export default function LearnPage() {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div className="flex min-h-screen flex-col">
       <Navbar />
-      <Container maxWidth="sm" sx={{ flex: 1, py: 4, px: 2 }}>
-        <Typography variant="h5" color="primary" sx={{ fontWeight: 700, mb: 0.5 }}>
-          Learn Jenjo
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          Pick a topic to start learning
-        </Typography>
-        <div className="grid grid-cols-2 gap-4">
+      <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
+        <h1 className="font-display text-4xl font-bold text-green">Learn Jenjo</h1>
+        <p className="mt-2 text-muted">Pick a topic to start learning</p>
+
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {sections.map((s) => (
-            <Card key={s.href} elevation={1}>
-              <CardActionArea component={Link} href={s.href} sx={{ height: '100%' }}>
-                <CardContent>
-                  <Typography variant="h4" component="span" sx={{ display: 'block', mb: 1 }}>
-                    {s.icon}
-                  </Typography>
-                  <Typography variant="subtitle1" color="primary" sx={{ fontWeight: 700 }}>
-                    {s.title}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {s.desc}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
+            <Link
+              key={s.href}
+              href={s.href}
+              className="group flex items-start gap-4 rounded-2xl border border-line bg-paper p-5 transition-all hover:-translate-y-0.5 hover:border-ochre hover:shadow-md"
+            >
+              <span
+                className={`grid h-14 w-14 flex-shrink-0 place-items-center rounded-xl text-2xl ${s.accent}`}
+              >
+                {s.icon}
+              </span>
+              <div>
+                <h2 className="font-display text-xl font-bold text-green">{s.title}</h2>
+                <p className="mt-1 text-sm text-muted">{s.desc}</p>
+              </div>
+            </Link>
           ))}
         </div>
-      </Container>
-    </Box>
+      </main>
+    </div>
   );
 }

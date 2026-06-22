@@ -1,18 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import ButtonBase from '@mui/material/ButtonBase';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
 import Navbar from '@/components/Navbar';
+import Loader from '@/components/Loader';
 import { getAlphabet } from '@/lib/api';
 
 interface AlphabetEntry {
@@ -33,76 +23,65 @@ export default function AlphabetPage() {
   }, []);
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div className="flex min-h-screen flex-col">
       <Navbar />
-      <Container maxWidth="md" sx={{ flex: 1, py: 4, px: 2 }}>
-        <Typography variant="h5" color="primary" sx={{ fontWeight: 700, mb: 3 }}>
-          Jenjo Alphabet
-        </Typography>
+      <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
+        <h1 className="font-display text-4xl font-bold text-green">Jenjo Alphabet</h1>
+        <p className="mt-2 text-muted">Tap a letter to see an example word</p>
 
-        {data.length === 0 && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
-            <CircularProgress color="primary" />
-          </Box>
+        {data.length === 0 ? (
+          <Loader />
+        ) : (
+          <div className="mt-8 grid grid-cols-3 gap-3 sm:grid-cols-5">
+            {data.map((entry, i) => {
+              const letter = entry.letter || entry.character || '?';
+              return (
+                <button
+                  key={i}
+                  onClick={() => setSelected(entry)}
+                  className="flex flex-col items-center gap-1 rounded-2xl border border-line bg-paper py-5 transition-all hover:-translate-y-0.5 hover:border-ochre hover:shadow-md"
+                >
+                  <span className="font-display text-2xl font-bold text-green">{letter}</span>
+                  <span className="max-w-full truncate px-2 text-xs text-muted">
+                    {entry.example || entry.example_word || ''}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         )}
+      </main>
 
-        <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
-          {data.map((entry, i) => {
-            const letter = entry.letter || entry.character || '?';
-            return (
-              <ButtonBase
-                key={i}
-                onClick={() => setSelected(entry)}
-                component={Paper}
-                elevation={1}
-                sx={{
-                  borderRadius: 3,
-                  p: 2,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: 0.5,
-                  width: '100%',
-                  transition: 'box-shadow 0.2s',
-                  '&:hover': { boxShadow: 4 },
-                }}
-              >
-                <Typography variant="h5" color="primary" sx={{ fontWeight: 700 }}>
-                  {letter}
-                </Typography>
-                <Typography variant="caption" color="text.secondary" noWrap>
-                  {entry.example || entry.example_word || ''}
-                </Typography>
-              </ButtonBase>
-            );
-          })}
+      {/* Modal */}
+      {selected && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4 backdrop-blur-sm"
+          onClick={() => setSelected(null)}
+        >
+          <div
+            className="animate-rise w-full max-w-xs rounded-3xl border border-line bg-paper p-8 text-center shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="font-display text-7xl font-bold text-green">
+              {selected.letter || selected.character}
+            </p>
+            {(selected.example || selected.example_word) && (
+              <p className="mt-4 text-xl font-semibold text-ink">
+                {selected.example || selected.example_word}
+              </p>
+            )}
+            {(selected.meaning || selected.english) && (
+              <p className="mt-1 text-muted">{selected.meaning || selected.english}</p>
+            )}
+            <button
+              onClick={() => setSelected(null)}
+              className="mt-6 w-full rounded-full bg-green py-3 font-semibold text-paper transition-colors hover:bg-green-deep"
+            >
+              Close
+            </button>
+          </div>
         </div>
-      </Container>
-
-      <Dialog open={!!selected} onClose={() => setSelected(null)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ textAlign: 'center', pb: 0 }}>
-          <Typography variant="h2" component="div" color="primary" sx={{ fontWeight: 700 }}>
-            {selected?.letter || selected?.character}
-          </Typography>
-        </DialogTitle>
-        <DialogContent sx={{ textAlign: 'center' }}>
-          {(selected?.example || selected?.example_word) && (
-            <Typography variant="h6" sx={{ mt: 1 }}>
-              {selected?.example || selected?.example_word}
-            </Typography>
-          )}
-          {(selected?.meaning || selected?.english) && (
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              {selected?.meaning || selected?.english}
-            </Typography>
-          )}
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: 'center', pb: 3 }}>
-          <Button variant="contained" onClick={() => setSelected(null)} sx={{ minWidth: 120 }}>
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+      )}
+    </div>
   );
 }

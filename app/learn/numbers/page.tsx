@@ -1,14 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Avatar from '@mui/material/Avatar';
-import CircularProgress from '@mui/material/CircularProgress';
 import Navbar from '@/components/Navbar';
+import Loader from '@/components/Loader';
 import { getNumbers } from '@/lib/api';
 
 interface NumberEntry {
@@ -24,6 +18,7 @@ interface NumberEntry {
 
 export default function NumbersPage() {
   const [numbers, setNumbers] = useState<NumberEntry[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     getNumbers()
@@ -33,65 +28,46 @@ export default function NumbersPage() {
         } else if (res.cardinal) {
           setNumbers(res.cardinal);
         } else {
-          setNumbers(Object.values(res).find(Array.isArray) as NumberEntry[] ?? []);
+          setNumbers((Object.values(res).find(Array.isArray) as NumberEntry[]) ?? []);
         }
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setLoaded(true));
   }, []);
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div className="flex min-h-screen flex-col">
       <Navbar />
-      <Container maxWidth="md" sx={{ flex: 1, py: 4, px: 2 }}>
-        <Typography variant="h5" color="primary" sx={{ fontWeight: 700, mb: 0.5 }}>
-          Numbers
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          Note: 6 = &quot;sibling of 1&quot;, 7 = &quot;sibling of 2&quot;, etc.
-        </Typography>
+      <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
+        <h1 className="font-display text-4xl font-bold text-green">Numbers</h1>
+        <p className="mt-2 text-muted">
+          Note: 6 = “sibling of 1”, 7 = “sibling of 2”, and so on.
+        </p>
 
-        {numbers.length === 0 && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
-            <CircularProgress color="primary" />
-          </Box>
-        )}
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {numbers.map((entry, i) => {
-            const num = entry.number ?? entry.numeral ?? entry.value ?? i + 1;
-            const word = entry.jenjo || entry.dza || entry.word || '—';
-            const note = entry.note || entry.pattern;
-            return (
-              <Card key={i} elevation={1} sx={{ textAlign: 'center' }}>
-                <CardContent>
-                  <Avatar
-                    sx={{
-                      bgcolor: 'primary.main',
-                      color: 'secondary.main',
-                      width: 48,
-                      height: 48,
-                      fontSize: '1.25rem',
-                      fontWeight: 700,
-                      mx: 'auto',
-                      mb: 1.5,
-                    }}
-                  >
+        {!loaded ? (
+          <Loader />
+        ) : (
+          <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {numbers.map((entry, i) => {
+              const num = entry.number ?? entry.numeral ?? entry.value ?? i + 1;
+              const word = entry.jenjo || entry.dza || entry.word || '—';
+              const note = entry.note || entry.pattern;
+              return (
+                <div
+                  key={i}
+                  className="flex flex-col items-center rounded-2xl border border-line bg-paper p-5 text-center transition-all hover:-translate-y-0.5 hover:border-ochre hover:shadow-md"
+                >
+                  <span className="grid h-12 w-12 place-items-center rounded-full bg-green font-display text-xl font-bold text-ochre">
                     {num}
-                  </Avatar>
-                  <Typography variant="subtitle1" color="primary" sx={{ fontWeight: 700 }}>
-                    {word}
-                  </Typography>
-                  {note && (
-                    <Typography variant="caption" color="text.secondary">
-                      {note}
-                    </Typography>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      </Container>
-    </Box>
+                  </span>
+                  <p className="mt-3 font-display text-lg font-bold text-green">{word}</p>
+                  {note && <p className="mt-0.5 text-xs text-muted">{note}</p>}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </main>
+    </div>
   );
 }

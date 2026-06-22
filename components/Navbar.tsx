@@ -1,48 +1,53 @@
 'use client';
 
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+
+const links = [
+  { href: '/chat', label: 'Chat' },
+  { href: '/learn', label: 'Learn' },
+];
 
 export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <AppBar position="sticky" elevation={2}>
-      <Toolbar>
-        <Typography
-          variant="h6"
-          component={Link}
-          href="/"
-          sx={{ color: 'secondary.main', fontWeight: 700, textDecoration: 'none', flexGrow: 1 }}
-        >
-          Mwambwi
-        </Typography>
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button
-            component={Link}
-            href="/chat"
-            variant={pathname === '/chat' ? 'contained' : 'text'}
-            color="secondary"
-            size="small"
-          >
-            Chat
-          </Button>
-          <Button
-            component={Link}
-            href="/learn"
-            variant={pathname.startsWith('/learn') ? 'contained' : 'text'}
-            color="secondary"
-            size="small"
-          >
-            Learn
-          </Button>
-        </Box>
-      </Toolbar>
-    </AppBar>
+    <header className="sticky top-0 z-40">
+      <nav className="border-b border-line bg-cream/85 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
+          <Link href="/" className="flex items-center gap-2.5">
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-green font-display text-lg font-bold text-ochre">
+              P
+            </span>
+            <span className="font-display text-xl font-bold tracking-tight text-green">
+              Pheebemi
+            </span>
+          </Link>
+
+          <div className="flex items-center gap-1">
+            {links.map((l) => {
+              const active =
+                l.href === '/learn'
+                  ? pathname.startsWith('/learn')
+                  : pathname === l.href;
+              return (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                    active
+                      ? 'bg-green text-paper'
+                      : 'text-ink/70 hover:bg-green-soft hover:text-green'
+                  }`}
+                >
+                  {l.label}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </nav>
+      <div className="pattern-strip" />
+    </header>
   );
 }

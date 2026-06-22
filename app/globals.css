@@ -1,5 +1,113 @@
 @import "tailwindcss";
 
-.chat-scroll {
+/* ----------------------------------------------------------------------------
+   Pheebemi — warm & cultural design system (pure Tailwind v4)
+   Heritage green + terracotta clay + ochre gold on warm cream.
+---------------------------------------------------------------------------- */
+@theme {
+  /* Surfaces */
+  --color-cream: #fbf6ec;
+  --color-sand: #f3e9d8;
+  --color-paper: #fffdf8;
+
+  /* Ink / text */
+  --color-ink: #2a2017;
+  --color-muted: #857a6b;
+
+  /* Brand */
+  --color-green: #1b5e20;
+  --color-green-deep: #123f16;
+  --color-green-soft: #e6efe2;
+
+  /* Accents — drawn from the Dza traditional attire */
+  --color-clay: #c24e2c;
+  --color-clay-soft: #f6e3da;
+  --color-ochre: #dca233;
+  --color-ochre-soft: #f8edd2;
+  --color-red: #c8302b;
+  --color-blue: #1e5fa8;
+
+  /* Lines */
+  --color-line: #e7dac5;
+
+  /* Type */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  --font-display: "Iowan Old Style", "Palatino Linotype", "Palatino", Georgia,
+    "Times New Roman", serif;
+
+  /* Radii */
+  --radius-xl2: 1.5rem;
+}
+
+html {
   scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Signature motif — woven bands of the Dza attire (red · gold · blue · green),
+   separated by thin white pinstripes like the real cloth. ------------------- */
+.pattern-strip {
+  height: 10px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--color-red) 0 14px,
+    #fff 14px 16px,
+    var(--color-ochre) 16px 30px,
+    #fff 30px 32px,
+    var(--color-blue) 32px 46px,
+    #fff 46px 48px,
+    var(--color-green) 48px 62px,
+    #fff 62px 64px
+  );
+}
+
+/* Faint geometric texture for hero / panels --------------------------------- */
+.pattern-tile {
+  background-color: var(--color-green);
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(220, 162, 51, 0.20) 0 2px, transparent 2px),
+    radial-gradient(circle at 70% 60%, rgba(200, 48, 43, 0.18) 0 2px, transparent 2px),
+    radial-gradient(circle at 45% 85%, rgba(30, 95, 168, 0.18) 0 2px, transparent 2px),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.04) 25%, transparent 25%),
+    linear-gradient(225deg, rgba(255, 255, 255, 0.04) 25%, transparent 25%);
+  background-size: 22px 22px, 26px 26px, 30px 30px, 18px 18px, 18px 18px;
+}
+
+/* Custom scrollbar (chat) --------------------------------------------------- */
+.chat-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+.chat-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.chat-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--color-line);
+  border-radius: 9999px;
+}
+
+/* Typing dots --------------------------------------------------------------- */
+@keyframes dot-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+.typing-dot {
+  animation: dot-bounce 1.2s infinite ease-in-out;
+}
+
+/* Gentle entrance ----------------------------------------------------------- */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-rise {
+  animation: rise 0.4s ease-out both;
 }

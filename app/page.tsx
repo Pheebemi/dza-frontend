@@ -1,106 +1,97 @@
-'use client';
-
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Stack from '@mui/material/Stack';
 import Link from 'next/link';
+import Navbar from '@/components/Navbar';
 
 const samplePhrases = [
   { jenjo: 'Səko!', english: 'Hello / Greetings' },
-  { jenjo: 'Ba wu bɨ tang', english: "Come let's eat" },
+  { jenjo: 'Ba wu bɨ tang', english: "Come, let's eat" },
   { jenjo: 'Fi tswebi və Fangwa', english: 'God loves the world' },
   { jenjo: 'Mɨng', english: 'Water' },
 ];
 
+const lessons = [
+  { href: '/learn/alphabet', label: 'Alphabet', icon: '🔤' },
+  { href: '/learn/vocabulary', label: 'Vocabulary', icon: '📖' },
+  { href: '/learn/phrases', label: 'Phrases', icon: '💬' },
+  { href: '/learn/numbers', label: 'Numbers', icon: '🔢' },
+];
+
 export default function HomePage() {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div className="flex min-h-screen flex-col">
+      <Navbar />
+
       {/* Hero */}
-      <Box
-        component="section"
-        sx={{
-          flex: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          bgcolor: 'primary.main',
-          color: 'white',
-          textAlign: 'center',
-          px: 3,
-          py: 10,
-        }}
-      >
-        <Container maxWidth="sm">
-          <Typography
-            variant="overline"
-            sx={{ color: 'secondary.main', letterSpacing: '0.15em', fontWeight: 600 }}
-          >
-            Taraba State, Nigeria
-          </Typography>
-          <Typography variant="h2" sx={{ fontWeight: 700, mt: 1, mb: 1 }}>
-            Mwambwi
-          </Typography>
-          <Typography variant="h5" sx={{ fontWeight: 500, mb: 1 }}>
-            Learn Jenjo
-          </Typography>
-          <Typography variant="body1" sx={{ color: '#a5d6a7', mb: 5 }}>
-            The language of the Dza people · ~100,000 speakers
-          </Typography>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ justifyContent: 'center' }}>
-            <Button variant="contained" color="secondary" size="large" component={Link} href="/chat" sx={{ px: 4 }}>
-              Start Chatting
-            </Button>
-            <Button
-              variant="outlined"
-              size="large"
-              component={Link}
-              href="/learn"
-              sx={{
-                px: 4,
-                borderColor: 'white',
-                color: 'white',
-                '&:hover': { bgcolor: 'white', color: 'primary.main', borderColor: 'white' },
-              }}
+      <section className="pattern-tile relative overflow-hidden text-paper">
+        <div className="absolute inset-0 bg-green/55" />
+        <div className="relative mx-auto max-w-3xl px-6 py-20 text-center sm:py-28">
+          <span className="inline-block rounded-full bg-ochre/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-ochre">
+            Taraba State · Nigeria
+          </span>
+          <h1 className="animate-rise mt-6 font-display text-5xl font-bold leading-[1.05] sm:text-7xl">
+            Səko! <span className="inline-block">👋</span>
+          </h1>
+          <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-cream/90 sm:text-xl">
+            Learn <span className="font-semibold text-ochre">Jenjo</span> — the
+            living voice of the Dza people, home to about 100,000 speakers.
+          </p>
+
+          <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link
+              href="/chat"
+              className="w-full rounded-full bg-ochre px-7 py-3.5 text-center font-semibold text-green-deep shadow-lg shadow-green-deep/20 transition-transform hover:scale-[1.02] sm:w-auto"
             >
-              Learn Basics
-            </Button>
-          </Stack>
-        </Container>
-      </Box>
+              Start chatting →
+            </Link>
+            <Link
+              href="/learn"
+              className="w-full rounded-full border border-cream/40 px-7 py-3.5 text-center font-semibold text-cream transition-colors hover:bg-cream hover:text-green sm:w-auto"
+            >
+              Browse lessons
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* Sample phrases */}
-      <Box component="section" sx={{ bgcolor: '#FFFDE7', py: 7, px: 3 }}>
-        <Container maxWidth="sm">
-          <Typography variant="h6" color="primary" sx={{ textAlign: 'center', fontWeight: 700, mb: 3 }}>
-            A taste of Jenjo
-          </Typography>
-          <div className="grid grid-cols-2 gap-4">
-            {samplePhrases.map((p) => (
-              <Card key={p.jenjo} variant="outlined">
-                <CardContent sx={{ pb: '12px !important' }}>
-                  <Typography variant="subtitle1" color="primary" sx={{ fontWeight: 700 }}>
-                    {p.jenjo}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                    {p.english}
-                  </Typography>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </Container>
-      </Box>
+      <section className="mx-auto w-full max-w-3xl px-6 py-16">
+        <div className="mb-8 text-center">
+          <h2 className="font-display text-3xl font-bold text-green">A taste of Jenjo</h2>
+          <p className="mt-2 text-muted">Four phrases to get you started</p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {samplePhrases.map((p) => (
+            <div
+              key={p.jenjo}
+              className="group rounded-2xl border border-line bg-paper p-5 transition-all hover:-translate-y-0.5 hover:border-ochre hover:shadow-md"
+            >
+              <p className="font-display text-2xl font-bold text-green">{p.jenjo}</p>
+              <p className="mt-1 text-muted">{p.english}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Lesson shortcuts */}
+        <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {lessons.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className="flex flex-col items-center gap-2 rounded-2xl border border-line bg-sand/60 px-4 py-6 text-center transition-colors hover:bg-green-soft"
+            >
+              <span className="text-3xl">{l.icon}</span>
+              <span className="font-semibold text-green">{l.label}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       {/* Footer */}
-      <Box component="footer" sx={{ bgcolor: 'primary.main', color: '#a5d6a7', textAlign: 'center', py: 2 }}>
-        <Typography variant="caption">
+      <footer className="mt-auto">
+        <div className="pattern-strip" />
+        <div className="bg-green-deep px-6 py-6 text-center text-sm text-cream/70">
           Built to preserve the Dza language · Taraba State, Nigeria
-        </Typography>
-      </Box>
-    </Box>
+        </div>
+      </footer>
+    </div>
   );
 }
