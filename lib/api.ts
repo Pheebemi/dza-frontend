@@ -5,14 +5,25 @@ export interface Message {
   content: string;
 }
 
-export async function sendMessage(message: string, conversationId: string | null) {
+export async function sendMessage(
+  message: string,
+  conversationId: string | null,
+  regenerate = false,
+) {
   const response = await fetch(`${API_BASE}/api/chat/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, conversation_id: conversationId }),
+    body: JSON.stringify({ message, conversation_id: conversationId, regenerate }),
   });
   if (!response.ok) {
-    throw new Error(`API error: ${response.status}`);
+    let detail = '';
+    try {
+      const body = await response.json();
+      detail = body?.error || '';
+    } catch {
+      /* non-JSON error body */
+    }
+    throw new Error(detail || `API error: ${response.status}`);
   }
   return response.json() as Promise<{ reply: string; conversation_id: string }>;
 }

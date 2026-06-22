@@ -1,9 +1,44 @@
+import ReactMarkdown, { Components } from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
 interface ChatBubbleProps {
   role: 'user' | 'assistant';
   content: string;
+  isError?: boolean;
 }
 
-export default function ChatBubble({ role, content }: ChatBubbleProps) {
+// Markdown elements styled to match the warm theme.
+const mdComponents: Components = {
+  p: ({ children }) => <p className="mb-2 leading-relaxed last:mb-0">{children}</p>,
+  strong: ({ children }) => <strong className="font-semibold text-green">{children}</strong>,
+  em: ({ children }) => <em className="italic">{children}</em>,
+  code: ({ children }) => (
+    <code className="rounded bg-ochre-soft px-1.5 py-0.5 text-[0.85em] font-medium text-green">
+      {children}
+    </code>
+  ),
+  pre: ({ children }) => (
+    <pre className="mb-2 overflow-x-auto rounded-lg bg-sand p-3 text-[0.85em] last:mb-0">
+      {children}
+    </pre>
+  ),
+  ul: ({ children }) => <ul className="mb-2 list-disc space-y-1 pl-5 last:mb-0">{children}</ul>,
+  ol: ({ children }) => <ol className="mb-2 list-decimal space-y-1 pl-5 last:mb-0">{children}</ol>,
+  li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+  a: ({ children, href }) => (
+    <a href={href} target="_blank" rel="noreferrer" className="text-green underline">
+      {children}
+    </a>
+  ),
+  h1: ({ children }) => <h3 className="mb-1 mt-2 font-display text-lg font-bold text-green">{children}</h3>,
+  h2: ({ children }) => <h3 className="mb-1 mt-2 font-display text-base font-bold text-green">{children}</h3>,
+  h3: ({ children }) => <h3 className="mb-1 mt-2 font-display text-base font-bold text-green">{children}</h3>,
+  blockquote: ({ children }) => (
+    <blockquote className="border-l-2 border-ochre pl-3 italic text-muted">{children}</blockquote>
+  ),
+};
+
+export default function ChatBubble({ role, content, isError }: ChatBubbleProps) {
   const isUser = role === 'user';
 
   return (
@@ -22,14 +57,22 @@ export default function ChatBubble({ role, content }: ChatBubbleProps) {
         className={`max-w-[80%] px-4 py-3 text-[0.95rem] leading-relaxed shadow-sm ${
           isUser
             ? 'rounded-2xl rounded-br-md bg-green text-paper'
-            : 'rounded-2xl rounded-bl-md border border-line bg-paper text-ink'
+            : isError
+              ? 'rounded-2xl rounded-bl-md border border-clay/40 bg-clay-soft text-ink'
+              : 'rounded-2xl rounded-bl-md border border-line bg-paper text-ink'
         }`}
       >
-        {content.split('\n').map((line, i) => (
-          <p key={i} className={i > 0 ? 'mt-1.5' : ''}>
-            {line || ' '}
-          </p>
-        ))}
+        {isUser ? (
+          content.split('\n').map((line, i) => (
+            <p key={i} className={i > 0 ? 'mt-1.5' : ''}>
+              {line || ' '}
+            </p>
+          ))
+        ) : (
+          <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+            {content}
+          </ReactMarkdown>
+        )}
       </div>
     </div>
   );

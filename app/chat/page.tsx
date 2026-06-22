@@ -28,8 +28,10 @@ const SUGGESTIONS = [
   'What does "Mɨng" mean?',
 ];
 
+type UiMessage = Message & { isError?: boolean };
+
 export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>([WELCOME]);
+  const [messages, setMessages] = useState<UiMessage[]>([WELCOME]);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [loading, setLoading] = useState(false);
@@ -70,31 +72,48 @@ export default function ChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
-  const handleSend = async (text: string) => {
-    const userMsg: Message = { role: 'user', content: text };
-    setMessages((prev) => [...prev, userMsg]);
+  const runTurn = async (text: string, regenerate: boolean) => {
     setLoading(true);
     const isNew = !conversationId;
-
     try {
-      const data = await sendMessage(text, conversationId);
+      const data = await sendMessage(text, conversationId, regenerate);
       if (isNew) {
         setConversationId(data.conversation_id);
         localStorage.setItem(STORAGE_KEY, data.conversation_id);
       }
       setMessages((prev) => [...prev, { role: 'assistant', content: data.reply }]);
       refreshList();
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: 'Sorry, something went wrong. Please check the backend is running.',
-        },
-      ]);
+    } catch (err) {
+      const content =
+        err instanceof Error && err.message
+          ? err.message
+          : 'Sorry, something went wrong. Please check the backend is running.';
+      setMessages((prev) => [...prev, { role: 'assistant', content, isError: true }]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSend = (text: string) => {
+    setMessages((prev) => [...prev, { role: 'user', content: text }]);
+    runTurn(text, false);
+  };
+
+  const handleRetry = () => {
+    if (loading) return;
+    const lastUser = [...messages].reverse().find((m) => m.role === 'user');
+    if (!lastUser) return;
+    const last = messages[messages.length - 1];
+    const lastWasError = last?.role === 'assistant' && last.isError === true;
+    // Drop the trailing assistant message (the error or the previous answer).
+    setMessages((prev) => {
+      const copy = [...prev];
+      if (copy[copy.length - 1]?.role === 'assistant') copy.pop();
+      return copy;
+    });
+    // If the previous answer succeeded it was saved server-side → ask the
+    // backend to replace it (regenerate). If it errored, nothing was saved → resend.
+    runTurn(lastUser.content, !lastWasError);
   };
 
   const handleNewChat = () => {
@@ -169,8 +188,30 @@ export default function ChatPage() {
           <div className="chat-scroll flex-1 overflow-y-auto">
             <div className="mx-auto max-w-2xl px-4 py-6">
               {messages.map((msg, i) => (
-                <ChatBubble key={i} role={msg.role} content={msg.content} />
+                <ChatBubble key={i} role={msg.role} content={msg.content} isError={msg.isError} />
               ))}
+
+              {!loading &&
+                messages.length > 1 &&
+                messages[messages.length - 1].role === 'assistant' && (
+                  <div className="mb-4 flex">
+                    <button
+                      onClick={handleRetry}
+                      className="ml-10 flex items-center gap-1.5 rounded-full border border-line bg-paper px-3 py-1.5 text-xs font-semibold text-muted transition-colors hover:border-ochre hover:text-green"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path
+                          d="M3 12a9 9 0 1 0 3-6.7L3 8m0-5v5h5"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      Retry
+                    </button>
+                  </div>
+                )}
 
               {loading && (
                 <div className="mb-4 flex items-center gap-2.5">
