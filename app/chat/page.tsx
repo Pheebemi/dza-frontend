@@ -81,21 +81,30 @@ export default function ChatPage() {
         setConversationId(data.conversation_id);
         localStorage.setItem(STORAGE_KEY, data.conversation_id);
       }
-      setMessages((prev) => [...prev, { role: 'assistant', content: data.reply }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: data.reply, created_at: new Date().toISOString() },
+      ]);
       refreshList();
     } catch (err) {
       const content =
         err instanceof Error && err.message
           ? err.message
           : 'Sorry, something went wrong. Please check the backend is running.';
-      setMessages((prev) => [...prev, { role: 'assistant', content, isError: true }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content, isError: true, created_at: new Date().toISOString() },
+      ]);
     } finally {
       setLoading(false);
     }
   };
 
   const handleSend = (text: string) => {
-    setMessages((prev) => [...prev, { role: 'user', content: text }]);
+    setMessages((prev) => [
+      ...prev,
+      { role: 'user', content: text, created_at: new Date().toISOString() },
+    ]);
     runTurn(text, false);
   };
 
@@ -188,7 +197,13 @@ export default function ChatPage() {
           <div className="chat-scroll flex-1 overflow-y-auto">
             <div className="mx-auto max-w-2xl px-4 py-6">
               {messages.map((msg, i) => (
-                <ChatBubble key={i} role={msg.role} content={msg.content} isError={msg.isError} />
+                <ChatBubble
+                  key={i}
+                  role={msg.role}
+                  content={msg.content}
+                  isError={msg.isError}
+                  createdAt={msg.created_at}
+                />
               ))}
 
               {!loading &&

@@ -5,6 +5,7 @@ interface ChatBubbleProps {
   role: 'user' | 'assistant';
   content: string;
   isError?: boolean;
+  createdAt?: string;
 }
 
 // Markdown elements styled to match the warm theme.
@@ -38,8 +39,12 @@ const mdComponents: Components = {
   ),
 };
 
-export default function ChatBubble({ role, content, isError }: ChatBubbleProps) {
+export default function ChatBubble({ role, content, isError, createdAt }: ChatBubbleProps) {
   const isUser = role === 'user';
+
+  const time = createdAt
+    ? new Date(createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : null;
 
   return (
     <div
@@ -48,31 +53,34 @@ export default function ChatBubble({ role, content, isError }: ChatBubbleProps) 
       }`}
     >
       {!isUser && (
-        <span className="mt-0.5 grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-green font-display text-sm font-bold text-ochre">
+        <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-green font-display text-sm font-bold text-ochre">
           P
         </span>
       )}
 
-      <div
-        className={`max-w-[80%] px-4 py-3 text-[0.95rem] leading-relaxed shadow-sm ${
-          isUser
-            ? 'rounded-2xl rounded-br-md bg-green text-paper'
-            : isError
-              ? 'rounded-2xl rounded-bl-md border border-clay/40 bg-clay-soft text-ink'
-              : 'rounded-2xl rounded-bl-md border border-line bg-paper text-ink'
-        }`}
-      >
-        {isUser ? (
-          content.split('\n').map((line, i) => (
-            <p key={i} className={i > 0 ? 'mt-1.5' : ''}>
-              {line || ' '}
-            </p>
-          ))
-        ) : (
-          <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
-            {content}
-          </ReactMarkdown>
-        )}
+      <div className={`flex max-w-[80%] flex-col ${isUser ? 'items-end' : 'items-start'}`}>
+        <div
+          className={`px-4 py-3 text-[0.95rem] leading-relaxed shadow-sm ${
+            isUser
+              ? 'rounded-2xl rounded-br-md bg-green text-paper'
+              : isError
+                ? 'rounded-2xl rounded-bl-md border border-clay/40 bg-clay-soft text-ink'
+                : 'rounded-2xl rounded-bl-md border border-line bg-paper text-ink'
+          }`}
+        >
+          {isUser ? (
+            content.split('\n').map((line, i) => (
+              <p key={i} className={i > 0 ? 'mt-1.5' : ''}>
+                {line || ' '}
+              </p>
+            ))
+          ) : (
+            <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+              {content}
+            </ReactMarkdown>
+          )}
+        </div>
+        {time && <span className="mt-1 px-1 text-[0.7rem] text-muted">{time}</span>}
       </div>
     </div>
   );

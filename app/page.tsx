@@ -31,8 +31,9 @@ export default function HomePage() {
             Səko! <span className="inline-block">👋</span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-cream/90 sm:text-xl">
-            Learn <span className="font-semibold text-ochre">Jenjo</span> — the
-            living voice of the Dza people, home to about 100,000 speakers.
+            The AI that understands and teaches{' '}
+            <span className="font-semibold text-ochre">Jenjo</span> — the living
+            voice of the Dza people.
           </p>
 
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">

@@ -3,6 +3,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 export interface Message {
   role: 'user' | 'assistant';
   content: string;
+  created_at?: string;
 }
 
 export async function sendMessage(
