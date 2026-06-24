@@ -8,29 +8,13 @@ interface ChatBubbleProps {
   createdAt?: string;
 }
 
-// Jenjo-specific characters (special letters + combining diacritics). Any word
-// containing one is a Jenjo word, so we bold it (which the theme renders green)
-// — independent of whether the AI model bolded it.
-const JENJO_RE = /[ɨəɛɔŋɓɗʃʒɣ̀-ͯ]/;
-
-function highlightJenjo(md: string): string {
-  // Leave existing **bold** and `code` spans untouched; only touch plain text.
-  return md
-    .split(/(\*\*[^*]+\*\*|`[^`]+`)/g)
-    .map((seg) => {
-      if (seg.startsWith('**') || seg.startsWith('`')) return seg;
-      return seg.replace(/[\p{L}\p{M}ʼ'’]+/gu, (w) => (JENJO_RE.test(w) ? `**${w}**` : w));
-    })
-    .join('');
-}
-
 // Markdown elements styled to match the warm theme.
 const mdComponents: Components = {
   p: ({ children }) => <p className="mb-2 leading-relaxed last:mb-0">{children}</p>,
-  strong: ({ children }) => <strong className="font-semibold text-green">{children}</strong>,
+  strong: ({ children }) => <strong className="font-semibold text-ink">{children}</strong>,
   em: ({ children }) => <em className="italic">{children}</em>,
   code: ({ children }) => (
-    <code className="rounded bg-ochre-soft px-1.5 py-0.5 text-[0.85em] font-medium text-green">
+    <code className="rounded bg-sand px-1.5 py-0.5 text-[0.85em] font-medium text-ink">
       {children}
     </code>
   ),
@@ -47,9 +31,9 @@ const mdComponents: Components = {
       {children}
     </a>
   ),
-  h1: ({ children }) => <h3 className="mb-1 mt-2 font-display text-lg font-bold text-green">{children}</h3>,
-  h2: ({ children }) => <h3 className="mb-1 mt-2 font-display text-base font-bold text-green">{children}</h3>,
-  h3: ({ children }) => <h3 className="mb-1 mt-2 font-display text-base font-bold text-green">{children}</h3>,
+  h1: ({ children }) => <h3 className="mb-1 mt-2 font-display text-lg font-bold text-ink">{children}</h3>,
+  h2: ({ children }) => <h3 className="mb-1 mt-2 font-display text-base font-bold text-ink">{children}</h3>,
+  h3: ({ children }) => <h3 className="mb-1 mt-2 font-display text-base font-bold text-ink">{children}</h3>,
   blockquote: ({ children }) => (
     <blockquote className="border-l-2 border-ochre pl-3 italic text-muted">{children}</blockquote>
   ),
@@ -92,7 +76,7 @@ export default function ChatBubble({ role, content, isError, createdAt }: ChatBu
             ))
           ) : (
             <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
-              {highlightJenjo(content)}
+              {content}
             </ReactMarkdown>
           )}
         </div>
