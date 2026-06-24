@@ -8,6 +8,22 @@ interface ChatBubbleProps {
   createdAt?: string;
 }
 
+// Jenjo-specific characters (special letters + combining diacritics). Any word
+// containing one is a Jenjo word, so we bold it (which the theme renders green)
+// — independent of whether the AI model bolded it.
+const JENJO_RE = /[ɨəɛɔŋɓɗʃʒɣ̀-ͯ]/;
+
+function highlightJenjo(md: string): string {
+  // Leave existing **bold** and `code` spans untouched; only touch plain text.
+  return md
+    .split(/(\*\*[^*]+\*\*|`[^`]+`)/g)
+    .map((seg) => {
+      if (seg.startsWith('**') || seg.startsWith('`')) return seg;
+      return seg.replace(/[\p{L}\p{M}ʼ'’]+/gu, (w) => (JENJO_RE.test(w) ? `**${w}**` : w));
+    })
+    .join('');
+}
+
 // Markdown elements styled to match the warm theme.
 const mdComponents: Components = {
   p: ({ children }) => <p className="mb-2 leading-relaxed last:mb-0">{children}</p>,
@@ -76,7 +92,7 @@ export default function ChatBubble({ role, content, isError, createdAt }: ChatBu
             ))
           ) : (
             <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
-              {content}
+              {highlightJenjo(content)}
             </ReactMarkdown>
           )}
         </div>
