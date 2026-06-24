@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import ChatBubble from '@/components/ChatBubble';
 import ChatInput from '@/components/ChatInput';
@@ -10,6 +11,7 @@ import {
   getConversation,
   listConversations,
   deleteConversation,
+  getToken,
   ConversationSummary,
   Message,
 } from '@/lib/api';
@@ -31,6 +33,8 @@ const SUGGESTIONS = [
 type UiMessage = Message & { isError?: boolean };
 
 export default function ChatPage() {
+  const router = useRouter();
+  const [authed, setAuthed] = useState(false);
   const [messages, setMessages] = useState<UiMessage[]>([WELCOME]);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
@@ -45,8 +49,18 @@ export default function ChatPage() {
       .catch(() => {});
   }, []);
 
+  // Require login: redirect to /login if there's no token.
+  useEffect(() => {
+    if (!getToken()) {
+      router.replace('/login');
+      return;
+    }
+    setAuthed(true);
+  }, [router]);
+
   // Resume a saved conversation + load the sidebar list on first load.
   useEffect(() => {
+    if (!authed) return;
     refreshList();
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) {
@@ -66,7 +80,7 @@ export default function ChatPage() {
         /* backend unreachable — keep the welcome screen, don't wipe the id */
       })
       .finally(() => setRestoring(false));
-  }, [refreshList]);
+  }, [authed, refreshList]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -156,6 +170,8 @@ export default function ChatPage() {
   };
 
   const showSuggestions = messages.length === 1 && !loading && !restoring;
+
+  if (!authed) return null;
 
   return (
     <div className="flex h-screen flex-col bg-cream">
