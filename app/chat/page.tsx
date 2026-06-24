@@ -41,7 +41,11 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(false);
   const [restoring, setRestoring] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingOlder, setLoadingOlder] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const skipAutoScroll = useRef(false);
 
   const refreshList = useCallback(() => {
     listConversations()
@@ -72,6 +76,7 @@ export default function ChatPage() {
         if (data.messages.length > 0) {
           setConversationId(saved);
           setMessages([WELCOME, ...data.messages]);
+          setHasMore(data.has_more);
         } else {
           localStorage.removeItem(STORAGE_KEY);
         }
@@ -83,8 +88,41 @@ export default function ChatPage() {
   }, [authed, refreshList]);
 
   useEffect(() => {
+    // Don't yank to the bottom when we just prepended older messages.
+    if (skipAutoScroll.current) {
+      skipAutoScroll.current = false;
+      return;
+    }
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
+
+  // Load the previous batch when the user scrolls near the top.
+  const loadOlder = useCallback(async () => {
+    if (loadingOlder || !hasMore || !conversationId) return;
+    const firstReal = messages.find((m) => m.id != null);
+    if (!firstReal?.id) return;
+    setLoadingOlder(true);
+    const el = scrollRef.current;
+    const prevHeight = el?.scrollHeight ?? 0;
+    try {
+      const data = await getConversation(conversationId, firstReal.id);
+      skipAutoScroll.current = true;
+      setMessages((prev) => [prev[0], ...data.messages, ...prev.slice(1)]);
+      setHasMore(data.has_more);
+      // keep the viewport anchored on the message the user was reading
+      requestAnimationFrame(() => {
+        if (el) el.scrollTop = el.scrollHeight - prevHeight;
+      });
+    } catch {
+      /* ignore */
+    } finally {
+      setLoadingOlder(false);
+    }
+  }, [loadingOlder, hasMore, conversationId, messages]);
+
+  const handleScroll = () => {
+    if (scrollRef.current && scrollRef.current.scrollTop < 80) loadOlder();
+  };
 
   const runTurn = async (text: string, regenerate: boolean) => {
     setLoading(true);
@@ -143,6 +181,7 @@ export default function ChatPage() {
     localStorage.removeItem(STORAGE_KEY);
     setConversationId(null);
     setMessages([WELCOME]);
+    setHasMore(false);
     setSidebarOpen(false);
   };
 
@@ -154,6 +193,7 @@ export default function ChatPage() {
       setConversationId(id);
       localStorage.setItem(STORAGE_KEY, id);
       setMessages([WELCOME, ...data.messages]);
+      setHasMore(data.has_more);
     } catch {
       /* ignore */
     }
@@ -210,11 +250,19 @@ export default function ChatPage() {
           </div>
 
           {/* Messages */}
-          <div className="chat-scroll flex-1 overflow-y-auto">
+          <div ref={scrollRef} onScroll={handleScroll} className="chat-scroll flex-1 overflow-y-auto">
             <div className="mx-auto max-w-2xl px-4 py-6">
-              {messages.map((msg, i) => (
+              {(loadingOlder || hasMore) && (
+                <div className="mb-4 flex justify-center">
+                  <span className="text-xs text-muted">
+                    {loadingOlder ? 'Loading earlier messages…' : 'Scroll up for earlier messages'}
+                  </span>
+                </div>
+              )}
+
+              {messages.map((msg) => (
                 <ChatBubble
-                  key={i}
+                  key={msg.id ?? `local-${msg.role}-${msg.created_at ?? 'welcome'}`}
                   role={msg.role}
                   content={msg.content}
                   isError={msg.isError}

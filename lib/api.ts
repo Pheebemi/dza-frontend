@@ -62,6 +62,7 @@ export async function login(username: string, password: string) {
 }
 
 export interface Message {
+  id?: number;
   role: 'user' | 'assistant';
   content: string;
   created_at?: string;
@@ -90,14 +91,20 @@ export async function sendMessage(
   return response.json() as Promise<{ reply: string; conversation_id: string }>;
 }
 
-export async function getConversation(conversationId: string) {
-  const res = await fetch(`${API_BASE}/api/conversations/${conversationId}/`, {
+export async function getConversation(conversationId: string, before?: number, limit = 20) {
+  const params = new URLSearchParams({ limit: String(limit) });
+  if (before != null) params.set('before', String(before));
+  const res = await fetch(`${API_BASE}/api/conversations/${conversationId}/?${params}`, {
     headers: authHeaders(),
   });
   if (!res.ok) {
     throw new Error(`API error: ${res.status}`);
   }
-  return res.json() as Promise<{ conversation_id: string | null; messages: Message[] }>;
+  return res.json() as Promise<{
+    conversation_id: string | null;
+    messages: Message[];
+    has_more: boolean;
+  }>;
 }
 
 export interface ConversationSummary {
