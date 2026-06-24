@@ -43,9 +43,45 @@ export default function ChatPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [loadingOlder, setLoadingOlder] = useState(false);
+  const [streaming, setStreaming] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const skipAutoScroll = useRef(false);
+  const typeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Typewriter: reveal the assistant reply progressively (~1s regardless of length).
+  const animateReply = useCallback((fullText: string) => {
+    setStreaming(true);
+    setMessages((prev) => [
+      ...prev,
+      { role: 'assistant', content: '', created_at: new Date().toISOString() },
+    ]);
+    const total = fullText.length;
+    const chunk = Math.max(2, Math.ceil(total / 60));
+    let i = 0;
+    const tick = () => {
+      i = Math.min(total, i + chunk);
+      setMessages((prev) => {
+        const copy = [...prev];
+        const last = copy[copy.length - 1];
+        if (last && last.role === 'assistant') {
+          copy[copy.length - 1] = { ...last, content: fullText.slice(0, i) };
+        }
+        return copy;
+      });
+      if (i < total) {
+        typeTimer.current = setTimeout(tick, 16);
+      } else {
+        setStreaming(false);
+      }
+    };
+    tick();
+  }, []);
+
+  // Clear any in-flight typewriter on unmount.
+  useEffect(() => () => {
+    if (typeTimer.current) clearTimeout(typeTimer.current);
+  }, []);
 
   const refreshList = useCallback(() => {
     listConversations()
@@ -133,11 +169,8 @@ export default function ChatPage() {
         setConversationId(data.conversation_id);
         localStorage.setItem(STORAGE_KEY, data.conversation_id);
       }
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: data.reply, created_at: new Date().toISOString() },
-      ]);
       refreshList();
+      animateReply(data.reply);
     } catch (err) {
       const content =
         err instanceof Error && err.message
@@ -271,6 +304,7 @@ export default function ChatPage() {
               ))}
 
               {!loading &&
+                !streaming &&
                 messages.length > 1 &&
                 messages[messages.length - 1].role === 'assistant' && (
                   <div className="mb-4 flex">
@@ -326,7 +360,7 @@ export default function ChatPage() {
           {/* Input */}
           <div className="border-t border-line bg-cream/90 backdrop-blur-md">
             <div className="mx-auto max-w-2xl">
-              <ChatInput onSend={handleSend} disabled={loading} />
+              <ChatInput onSend={handleSend} disabled={loading || streaming} />
             </div>
           </div>
         </main>
