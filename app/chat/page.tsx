@@ -253,7 +253,7 @@ export default function ChatPage() {
   if (!authed) return null;
 
   return (
-    <div className="flex h-screen flex-col bg-cream">
+    <div className="flex h-dvh flex-col bg-cream">
       <Navbar />
 
       <div className="flex flex-1 overflow-hidden">

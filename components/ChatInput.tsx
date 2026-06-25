@@ -96,8 +96,24 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
   };
 
   return (
-    <div className="flex items-end gap-2 p-3">
-      <textarea
+    <div className="p-3">
+      {listening && (
+        <div className="mb-2 flex items-center justify-center gap-2">
+          <span className="flex h-4 items-end gap-0.5">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <span
+                key={i}
+                className="sound-bar w-1 rounded-full bg-clay"
+                style={{ height: '20%', animationDelay: `${i * 0.12}s` }}
+              />
+            ))}
+          </span>
+          <span className="text-xs font-medium text-clay">Listening…</span>
+        </div>
+      )}
+
+      <div className="flex items-end gap-2">
+        <textarea
         ref={ref}
         rows={1}
         placeholder={listening ? 'Listening… speak now' : 'Type in English or Jenjo…'}
@@ -142,6 +158,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
           <path d="M3.4 20.4 21 12 3.4 3.6 3.4 10.2 15 12 3.4 13.8z" fill="currentColor" />
         </svg>
       </button>
+      </div>
     </div>
   );
 }
