@@ -47,6 +47,7 @@ export default function ChatPage() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const skipAutoScroll = useRef(false);
+  const instantScroll = useRef(false);
   const typeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Typewriter: reveal the assistant reply progressively (~1s regardless of length).
@@ -111,6 +112,7 @@ export default function ChatPage() {
       .then((data) => {
         if (data.messages.length > 0) {
           setConversationId(saved);
+          instantScroll.current = true;
           setMessages([WELCOME, ...data.messages]);
           setHasMore(data.has_more);
         } else {
@@ -129,7 +131,10 @@ export default function ChatPage() {
       skipAutoScroll.current = false;
       return;
     }
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // Jump instantly on first load/open; smooth-scroll for new messages after.
+    const behavior = instantScroll.current ? 'auto' : 'smooth';
+    instantScroll.current = false;
+    bottomRef.current?.scrollIntoView({ behavior });
   }, [messages, loading]);
 
   // Load the previous batch when the user scrolls near the top.
@@ -225,6 +230,7 @@ export default function ChatPage() {
       const data = await getConversation(id);
       setConversationId(id);
       localStorage.setItem(STORAGE_KEY, id);
+      instantScroll.current = true;
       setMessages([WELCOME, ...data.messages]);
       setHasMore(data.has_more);
     } catch {
