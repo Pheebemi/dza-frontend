@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { login, signup } from '@/lib/api';
@@ -33,10 +34,8 @@ export default function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
       <div className="pattern-strip" />
       <main className="flex flex-1 items-center justify-center px-6 py-12">
         <div className="w-full max-w-sm">
-          <Link href="/" className="mb-8 flex items-center justify-center gap-2.5">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-green font-display text-xl font-bold text-ochre">
-              P
-            </span>
+          <Link href="/" className="mb-8 flex items-center justify-center gap-2">
+            <Image src="/logo.png" alt="Pheebemi" width={40} height={40} priority className="h-10 w-10" />
             <span className="font-display text-2xl font-bold tracking-tight text-green">
               Pheebemi
             </span>

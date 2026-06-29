@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { getUsername, logout } from '@/lib/api';
@@ -30,10 +31,8 @@ export default function Navbar() {
     <header className="sticky top-0 z-40">
       <nav className="border-b border-line bg-cream/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
-          <Link href="/" className="flex items-center gap-2.5">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-green font-display text-lg font-bold text-ochre">
-              P
-            </span>
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/logo.png" alt="Pheebemi" width={36} height={36} priority className="h-9 w-9" />
             <span className="font-display text-xl font-bold tracking-tight text-green">
               Pheebemi
             </span>

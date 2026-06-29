@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import ChatBubble from '@/components/ChatBubble';
@@ -334,9 +335,13 @@ export default function ChatPage() {
 
               {loading && (
                 <div className="mb-4 flex items-center gap-2.5">
-                  <span className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full bg-green font-display text-sm font-bold text-ochre">
-                    P
-                  </span>
+                  <Image
+                    src="/logo.png"
+                    alt="Pheebemi"
+                    width={32}
+                    height={32}
+                    className="h-8 w-8 shrink-0 rounded-full border border-line bg-paper p-0.5"
+                  />
                   <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-md border border-line bg-paper px-4 py-3.5">
                     <span className="typing-dot h-2 w-2 rounded-full bg-green [animation-delay:0ms]" />
                     <span className="typing-dot h-2 w-2 rounded-full bg-green [animation-delay:200ms]" />

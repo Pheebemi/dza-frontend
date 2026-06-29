@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -53,9 +54,13 @@ export default function ChatBubble({ role, content, isError, createdAt }: ChatBu
       }`}
     >
       {!isUser && (
-        <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-green font-display text-sm font-bold text-ochre">
-          P
-        </span>
+        <Image
+          src="/logo.png"
+          alt="Pheebemi"
+          width={32}
+          height={32}
+          className="mt-0.5 h-8 w-8 shrink-0 rounded-full border border-line bg-paper p-0.5"
+        />
       )}
 
       <div className={`flex max-w-[80%] flex-col ${isUser ? 'items-end' : 'items-start'}`}>
